@@ -16,12 +16,27 @@ func main() {
         machine.D6,
         machine.D5,
         machine.D4,
+        machine.led
     }
-    for _, pin := range pins {
+    
+ 
+
+    for {
+
+for _, pin := range pins {
+        pin.Configure(machine.PinConfig{Mode: machine.PinOutput})
+        // Установка пина в LOW
+        pin.High()
+    }
+
+    // Задержка в 1 секунду
+    time.Sleep(time.Second)
+
+
+for _, pin := range pins {
         pin.Configure(machine.PinConfig{Mode: machine.PinOutput})
         // Установка пина в LOW
         pin.Low()
     }
-    // Задержка в 1 секунду
-    time.Sleep(time.Second)
+    }
 }

@@ -88,7 +88,7 @@ func weldWithPowerLevel(powerLevel int) {
 
 		// отключаем сварку
 		for _, pin := range powerPins {
-			//отключаем мощность (пускаем через транзистор на резисторы)
+			//отключаем мощность (закрываем транзисторы)
 			pin.High()
 		}
 

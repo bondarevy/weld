@@ -9,14 +9,13 @@ import (
 var led = machine.LED
 
 // Инициализируем пин для кнопки c прерыванием (D2)!
-var pedal 					= machine.ADC1 
-var voltareSensor 	= machine.ADC2
+var pedal 	    = machine.ADC1 
+var voltareSensor   = machine.ADC2
 var capacitorCharge = machine.ADC3 //был A0
 var weldingSolenoid = machine.D12
-var argonSolenoid		= machine.D13
+var argonSolenoid   = machine.D13
 
-//переменная нажата ли кнопка?
-var pedalPressed bool = false
+
 
 // Выбираем пины которые использует сварка для подачи мощности объединяем их в общий массив (слайс) с названием "powerPins"
 var powerPins = []machine.Pin{
@@ -30,13 +29,7 @@ var powerPins = []machine.Pin{
 	machine.D11,
 }
 
-func pedalInterruptCallback() {
 
-	//инвертируем значение переменное - если true - делаем false и наоборот
-	if pedalPressed {
-		pedalPressed = false
-	}
-}
 
 // В функции init() обычно задаются все начальные параметры переменных - она выполнясется до функции main().
 func init() {
@@ -47,9 +40,6 @@ func init() {
 	// Настраиваем пин для кнопки как вход и включаем внутреннюю подтяжку к питанию
 	pedal.Configure(machine.PinConfig{Mode: machine.PinInputPullup})
 	//pedal.Configure(machine.PinConfig{Mode: buttonMode})
-
-	// Настраиваем прерывание на пине кнопки
-	//pedal.SetInterrupt(pedalPinChange, pedalInterruptCallback)
 
 	// Конфигурирум все пины из слайса "powerPins" как исходящие "output" и подаем на них ток "High" по умолчанию (так устроена конструкция сварки).
 	for _, powerPin := range powerPins {

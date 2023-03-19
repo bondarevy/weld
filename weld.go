@@ -73,8 +73,18 @@ func weldWithPowerLevel(powerLevel int) {
 		//включаем светодиод
 		led.High()
 
-		// ждем 1 секунду (1000милисекунд):
+		// ждем 1 миллисекунду - блокируемся на все время ожидания (так лучше никогда не делать):
 		time.Sleep(1 * time.Millisecond)
+
+		// ждем 1 миллисекунду но не блокируемся и проверяем что нибудь (например нажата ли педаль?)
+		for startTime := time.Now(); time.Since(startTime) < (1 * time.Millisecond); {  
+			    // Проверяем если нажата кнопка:
+					    if pedal.Get() {
+								print("педаль нажата")
+							} else {
+								print("педаль не нажата")
+							}
+		}
 
 		// отключаем сварку
 		for _, pin := range powerPins {

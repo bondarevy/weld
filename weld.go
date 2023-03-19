@@ -9,14 +9,17 @@ import (
 var led = machine.LED
 
 // Инициализируем пин для кнопки c прерыванием (D2)!
-var button = machine.D3
+var pedal 					= machine.ADC1 
+var voltareSensor 	= machine.ADC2
+var capacitorCharge = machine.ADC3 //был A0
+var weldingSolenoid = machine.D12
+var argonSolenoid		= machine.D13
 
 //переменная нажата ли кнопка?
-var buttonPressed bool = false
+var pedalPressed bool = false
 
 // Выбираем пины которые использует сварка для подачи мощности объединяем их в общий массив (слайс) с названием "powerPins"
 var powerPins = []machine.Pin{
-	machine.D2,
 	machine.D4,
 	machine.D5,
 	machine.D6,
@@ -24,13 +27,14 @@ var powerPins = []machine.Pin{
 	machine.D8,
 	machine.D9,
 	machine.D10,
+	machine.D11,
 }
 
-func buttonInterruptCallback() {
+func pedalInterruptCallback() {
 
 	//инвертируем значение переменное - если true - делаем false и наоборот
-	if buttonPressed {
-		buttonPressed = false
+	if pedalPressed {
+		pedalPressed = false
 	}
 }
 
@@ -41,11 +45,11 @@ func init() {
 	led.Configure(machine.PinConfig{Mode: machine.PinOutput})
 
 	// Настраиваем пин для кнопки как вход и включаем внутреннюю подтяжку к питанию
-	button.Configure(machine.PinConfig{Mode: machine.PinInputPullup})
-	//button.Configure(machine.PinConfig{Mode: buttonMode})
+	pedal.Configure(machine.PinConfig{Mode: machine.PinInputPullup})
+	//pedal.Configure(machine.PinConfig{Mode: buttonMode})
 
 	// Настраиваем прерывание на пине кнопки
-	//button.SetInterrupt(buttonPinChange, buttonInterruptCallback)
+	//pedal.SetInterrupt(pedalPinChange, pedalInterruptCallback)
 
 	// Конфигурирум все пины из слайса "powerPins" как исходящие "output" и подаем на них ток "High" по умолчанию (так устроена конструкция сварки).
 	for _, powerPin := range powerPins {
@@ -76,14 +80,20 @@ func weldWithPowerLevel(powerLevel int) {
 			}
 		}
 
+		//включаем светодиод
+		led.High()
+
 		// ждем 1 секунду (1000милисекунд):
-		time.Sleep(1000 * time.Millisecond)
+		time.Sleep(1 * time.Millisecond)
 
 		// отключаем сварку
 		for _, pin := range powerPins {
 			//отключаем мощность (пускаем через транзистор на резисторы)
 			pin.High()
 		}
+
+		//выключаем светодиод
+		led.Low()
 
 		//конец проверки powerLevel
 	}
@@ -95,9 +105,9 @@ func main() {
 
 	// Запускаем бесконечный цикл
 	for {
-		
+
 		// Проверяем если нажата кнопка:
-		if button.Get() {
+		if pedal.Get() {
 			//кнопка нажата
 			//выполним сварку с мощностью = 2 пропущенными транзисторами:
 			weldWithPowerLevel(2)
